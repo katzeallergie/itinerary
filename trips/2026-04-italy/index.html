@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Italia 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #EDE4D0;
+  --surface: #FFFDF8;
+  --surface-2: #F8F3E8;
+  --border: rgba(80,55,30,0.10);
+  --border-mid: rgba(80,55,30,0.18);
+  --text: #1C1714;
+  --text-sub: #6B5E50;
+  --text-muted: #A0917E;
+  --c-move: #2563A8;
+  --c-see: #1F7A52;
+  --c-eat: #B5660A;
+  --c-stay: #6B4FA8;
+  --c-tix: #B33D20;
+  --c-free: #7D7262;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'DM Sans', -apple-system, sans-serif;
+  --r: 10px; --r-sm: 7px;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  padding: 56px 24px 44px;
+  padding-top: calc(56px + env(safe-area-inset-top));
+  background: linear-gradient(158deg, #F5EDD8 0%, #EDE0C4 45%, #E5D4AE 100%);
+  overflow: hidden;
+  text-align: center;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 12% 88%, rgba(176,80,35,0.13) 0%, transparent 52%),
+    radial-gradient(ellipse at 88% 12%, rgba(120,95,45,0.10) 0%, transparent 52%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: rgba(80,55,30,0.15);
+}
+.hero-flag { font-size: 26px; display: block; margin-bottom: 20px; letter-spacing: 3px; }
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: 72px; font-weight: 400; font-style: italic;
+  line-height: 0.88; color: #1C1714; letter-spacing: -1.5px;
+}
+.hero-year {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 400;
+  color: var(--text-sub); letter-spacing: 8px;
+  margin-top: 10px; display: block;
+}
+.hero-line {
+  width: 36px; height: 0.5px;
+  background: rgba(80,55,30,0.28);
+  margin: 22px auto 18px;
+}
+.hero-dates {
+  font-size: 11px; font-weight: 400;
+  color: var(--text-sub); letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.hero-cities {
+  font-family: var(--font-serif);
+  font-size: 15px; font-style: italic;
+  color: var(--text-muted); margin-top: 7px; line-height: 1.8;
+}
+
+/* STICKY BAR */
+#stickyBar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,253,248,0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 0.5px solid var(--border-mid);
+  padding: 9px 14px;
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(-100%);
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+}
+#stickyBar.visible { transform: translateY(0); }
+.sticky-title {
+  font-family: var(--font-serif);
+  font-size: 18px; font-style: italic; font-weight: 400;
+  color: var(--text); flex: 1;
+}
+
+/* CITY NAV */
+.city-nav {
+  display: flex; gap: 7px;
+  padding: 9px 14px;
+  background: rgba(255,253,248,0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 0.5px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+  position: sticky; top: 47px; z-index: 90;
+}
+.city-nav::-webkit-scrollbar { display: none; }
+.city-nav-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 13px; border-radius: 20px;
+  font-size: 12.5px; font-family: var(--font-sans); font-weight: 400;
+  white-space: nowrap;
+  border: 0.5px solid var(--border-mid);
+  background: var(--surface); color: var(--text-sub);
+  cursor: pointer; flex-shrink: 0;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.city-nav-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+.city-nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ROUTE MAP */
+.route-map-section {
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+}
+.route-map-toggle {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.route-map-label {
+  font-size: 12px; font-weight: 400; letter-spacing: 0.8px;
+  color: var(--text-sub);
+  display: flex; align-items: center; gap: 7px;
+}
+.route-map-label::before { content: '✦'; font-size: 9px; color: var(--text-muted); }
+.route-map-chevron {
+  font-size: 10px; color: var(--text-muted);
+  transition: transform 0.25s;
+}
+.route-map-chevron.open { transform: rotate(180deg); }
+.route-map-body {
+  height: 0; overflow: hidden;
+  transition: height 0.34s cubic-bezier(0.4,0,0.2,1);
+}
+.route-map-body.open { height: 240px; }
+#routeMap { width: 100%; height: 240px; }
+
+/* CONTAINER */
+.container {
+  max-width: 680px; margin: 0 auto;
+  padding: 0 13px 48px;
+  padding-bottom: calc(48px + env(safe-area-inset-bottom));
+}
+
+/* LEGEND */
+.legend {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 11px; padding: 11px 14px;
+  background: var(--surface);
+  border-radius: var(--r); margin: 14px 0;
+  border: 0.5px solid var(--border);
+}
+.legend-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11.5px; color: var(--text-sub); font-weight: 300;
+}
+.legend-dot { width: 12px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* FREE TIME TOGGLE in legend */
+.ft-toggle-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  border: 0.5px solid rgba(125,114,98,0.32);
+  background: #F5F1E8; color: #7D7262;
+  font-size: 12px; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.18s;
+  -webkit-tap-highlight-color: transparent; white-space: nowrap;
+}
+.ft-toggle-btn.off { background: var(--surface-2); border-color: var(--border-mid); color: var(--text-muted); }
+.ft-dot {
+  width: 10px; height: 3px; border-radius: 2px; flex-shrink: 0;
+  background: repeating-linear-gradient(90deg, var(--c-free) 0 3px, transparent 3px 6px);
+  transition: opacity 0.18s;
+}
+.ft-toggle-btn.off .ft-dot { opacity: 0.3; }
+
+/* STICKY FREE TIME TOGGLE */
+#stickyFtBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  border: 0.5px solid rgba(125,114,98,0.32);
+  background: #F5F1E8; color: #7D7262;
+  font-size: 12px; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.18s;
+  -webkit-tap-highlight-color: transparent; white-space: nowrap;
+}
+#stickyFtBtn.off { background: var(--surface-2); border-color: var(--border-mid); color: var(--text-muted); }
+#stickyFtBtn .ft-dot { width: 10px; height: 3px; border-radius: 2px; flex-shrink: 0; background: repeating-linear-gradient(90deg, var(--c-free) 0 3px, transparent 3px 6px); transition: opacity 0.18s; }
+#stickyFtBtn.off .ft-dot { opacity: 0.3; }
+
+/* SECTION DIVIDER */
+.section-divider {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 10.5px; font-weight: 500; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin: 22px 0 8px;
+}
+.section-divider::before, .section-divider::after {
+  content: ''; flex: 1; height: 0.5px; background: var(--border-mid);
+}
+
+/* CITY HEADER */
+.city-header {
+  margin: 30px 0 4px;
+  scroll-margin-top: 115px;
+}
+.city-header-inner {
+  background: var(--surface);
+  border-radius: var(--r);
+  border: 0.5px solid var(--border);
+  padding: 18px 16px 16px 20px;
+  position: relative; overflow: hidden;
+}
+.city-header-accent {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  width: 3px;
+}
+.city-roman {
+  font-size: 10px; font-weight: 400; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 3px;
+}
+.city-name {
+  font-family: var(--font-serif);
+  font-size: 42px; font-style: italic; font-weight: 400;
+  line-height: 1; color: var(--text); margin-bottom: 5px;
+}
+.city-dates { font-size: 12px; color: var(--text-muted); font-weight: 300; }
+
+/* DAY BLOCK */
+.day-block { margin-bottom: 18px; }
+.day-label {
+  font-size: 12px; font-weight: 400;
+  color: var(--text-muted); letter-spacing: 0.3px;
+  padding: 12px 0 5px;
+}
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 26px; }
+.timeline::before {
+  content: ''; position: absolute;
+  left: 6px; top: 8px; bottom: 8px;
+  width: 1px; background: var(--border-mid);
+}
+
+/* ITEMS */
+.item {
+  position: relative;
+  margin-bottom: 7px;
+  background: var(--surface);
+  border-radius: var(--r-sm);
+  padding: 9px 11px;
+  border: 0.5px solid var(--border);
+  border-left-width: 2.5px;
+  border-left-color: var(--border-mid);
+}
+.item::before {
+  content: '';
+  position: absolute; left: -23px; top: 12px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--surface); border: 1.5px solid var(--border-mid);
+}
+.item.sightseeing { border-left-color: var(--c-see); }
+.item.sightseeing::before { border-color: var(--c-see); }
+.item.food { border-left-color: var(--c-eat); }
+.item.food::before { border-color: var(--c-eat); }
+.item.hotel { border-left-color: var(--c-stay); }
+.item.hotel::before { border-color: var(--c-stay); }
+.item.practical { border-left-color: var(--c-tix); }
+.item.practical::before { border-color: var(--c-tix); }
+.item.ticket { border-left-color: var(--c-tix); }
+.item.ticket::before { border-color: var(--c-tix); }
+.item.tbd { border-left-color: var(--border-mid); border-left-style: dashed; opacity: 0.75; }
+.item.free-time {
+  background: #FAF7EF;
+  border-color: rgba(125,114,98,0.18);
+  border-left-color: var(--c-free);
+  border-left-style: dashed;
+}
+.item.free-time::before { border-color: var(--c-free); }
+.item.free-time .item-time { color: #9E9285; }
+.item.free-time .item-title { color: #7D7262; font-size: 13.5px; }
+.item.free-time .item-note { color: #9E9285; }
+
+/* TRANSPORT */
+.item.transport { background: none; border: none; padding: 0; }
+.item.transport::before { display: none; }
+.transport-stop {
+  background: var(--surface);
+  border: 0.5px solid #A8CAEB;
+  border-left: 2.5px solid var(--c-move);
+  border-radius: var(--r-sm);
+  padding: 9px 11px;
+}
+.transport-connector { height: 48px; position: relative; }
+.transport-connector::before {
+  content: '';
+  position: absolute; top: 6px;
+  left: 50%; transform: translateX(-50%);
+  width: 2px; height: calc(100% - 22px);
+  background: var(--c-move); opacity: 0.35;
+}
+.transport-connector::after {
+  content: '';
+  position: absolute; bottom: 5px;
+  left: 50%; transform: translateX(-50%);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 11px solid var(--c-move);
+  opacity: 0.5;
+}
+.transport-time {
+  position: absolute;
+  left: calc(50% + 14px); top: 50%; transform: translateY(-50%);
+  font-size: 11px; color: var(--c-move);
+  font-weight: 500; white-space: nowrap;
+}
+.transport-note { font-size: 11.5px; color: var(--text-muted); margin-top: 4px; }
+
+/* ITEM TYPOGRAPHY */
+.item-time {
+  font-size: 11px; color: var(--text-muted); font-weight: 400;
+  margin-bottom: 2px; font-variant-numeric: tabular-nums;
+}
+.item-title { font-size: 14px; color: var(--text); font-weight: 400; line-height: 1.4; }
+.item-note { font-size: 12px; color: var(--text-sub); margin-top: 4px; line-height: 1.6; font-weight: 300; }
+.item-footer { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+/* BADGES */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 500;
+  padding: 2px 7px; border-radius: 20px;
+  letter-spacing: 0.2px; vertical-align: middle;
+  margin-left: 4px;
+}
+.badge-ok { background: #DDF2E7; color: #1A6B40; }
+.badge-warn { background: #FCECD5; color: #8B4A0A; }
+.badge-tbd { background: var(--surface-2); color: var(--text-muted); }
+
+/* MAP LINKS */
+a.map-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; color: #1A5FA0;
+  background: #EBF3FF; border: 0.5px solid #BAD5F5;
+  border-radius: var(--r-sm);
+  padding: 4px 9px; text-decoration: none;
+  white-space: nowrap; font-weight: 400;
+}
+a.map-link:active { opacity: 0.65; }
+
+/* TODAY */
+.day-block.is-today { scroll-margin-top: 115px; }
+.day-block.is-today .day-label { color: var(--c-tix); font-weight: 500; }
+.day-block.is-today .day-label::before { content: '▶ 今日 · '; }
+
+/* HIDE FREE TIME */
+.hide-free-time .item.free-time { display: none; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <span class="hero-flag">🇮🇹</span>
+  <div class="hero-title">Italia</div>
+  <span class="hero-year">2 0 2 6</span>
+  <div class="hero-line"></div>
+  <div class="hero-dates">4月27日 — 5月8日</div>
+  <div class="hero-cities">Milano · Roma · Firenze<br>Venezia · Lago di Como</div>
+</div>
+
+<!-- STICKY BAR -->
+<div id="stickyBar">
+  <span class="sticky-title">Italia 2026</span>
+  <button id="stickyFtBtn" onclick="toggleFreeTime()">
+    <span class="ft-dot"></span><span>自由時間</span><span id="ftCheck1">✓</span>
+  </button>
+</div>
+
+<!-- CITY NAV -->
+<div class="city-nav" id="cityNav">
+  <button class="city-nav-btn" data-target="city-roma"><span class="city-nav-dot" style="background:#B33D20"></span>Roma</button>
+  <button class="city-nav-btn" data-target="city-firenze"><span class="city-nav-dot" style="background:#1F7A52"></span>Firenze</button>
+  <button class="city-nav-btn" data-target="city-venezia"><span class="city-nav-dot" style="background:#5047A0"></span>Venezia</button>
+  <button class="city-nav-btn" data-target="city-milano"><span class="city-nav-dot" style="background:#8B7A52"></span>Milano</button>
+</div>
+
+<!-- ROUTE MAP -->
+<div class="route-map-section">
+  <div class="route-map-toggle" onclick="toggleMap(this)">
+    <span class="route-map-label">ルート地図</span>
+    <span class="route-map-chevron">▼</span>
+  </div>
+  <div class="route-map-body" id="routeMapBody">
+    <div id="routeMap"></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#2563A8"></div>移動</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1F7A52"></div>観光</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#B5660A"></div>食事</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#6B4FA8"></div>ホテル</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#B33D20"></div>予約済チケット</div>
+  <button class="ft-toggle-btn" id="legendFtBtn" onclick="toggleFreeTime()">
+    <span class="ft-dot"></span><span>自由時間</span><span id="ftCheck2">✓</span>
+  </button>
+</div>
+
+<div class="section-divider">出発</div>
+
+<!-- 4/26 -->
+<div class="day-block" data-date="2026-04-26">
+  <div class="day-label">4/26 (日)</div>
+  <div class="timeline">
+    <div class="item free-time">
+      <div class="item-time">〜16:00 ｜ 自由時間</div>
+      <div class="item-title">出発前 自由時間</div>
+      <div class="item-note">最終荷造り・近場散策など</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">18:15</div>
+        <div class="item-title">成田</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Narita+International+Airport" target="_blank">📍 成田国際空港</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">6h05m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">4/27 0:20</div>
+        <div class="item-title">アブダビ 着</div>
+        <div class="item-note">EY801 / 乗継 1h55m</div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">5h30m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">4/27 7:45</div>
+        <div class="item-title">ミラノ(MXP)</div>
+        <div class="item-note">EY81</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MILANO ARRIVAL HEADER -->
+<div class="city-header">
+  <div class="city-header-inner">
+    <div class="city-header-accent" style="background:#8B7A52"></div>
+    <div class="city-roman">Milano</div>
+    <div class="city-name">ミラノ</div>
+    <div class="city-dates">4月27日 — 4月28日朝</div>
+  </div>
+</div>
+
+<!-- 4/27 -->
+<div class="day-block" data-date="2026-04-27">
+  <div class="day-label">4/27 (月) — ミラノ着・市内観光</div>
+  <div class="timeline">
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">7:45頃</div>
+        <div class="item-title">ミラノ(MXP) 着</div>
+        <div class="item-note">前セクションのフライト続き</div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">50m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">8:45頃</div>
+        <div class="item-title">ミラノ中央駅 着</div>
+        <div class="item-note">Malpensa Express など。荷物はコインロッカーへ／または郊外ホテルに先に預けてから観光も可</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Milano+Centrale+Station" target="_blank">📍 ミラノ中央駅</a></div>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">9:00〜9:30</div>
+      <div class="item-title">朝カフェ</div>
+      <div class="item-note">中央駅周辺 or ドゥオモ方面でバール・コルネット</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">9:30〜12:00</div>
+      <div class="item-title">ガッレリア・スフォルツェスコ城（ドゥオモは15:00の予約枠で）</div>
+      <div class="item-note">ガッレリア散策・スフォルツェスコ城の中庭無料エリア。ドゥオモ外観は移動途中に立ち寄り可</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Galleria+Vittorio+Emanuele+II+Milano" target="_blank">📍 ガッレリア</a>
+        <a class="map-link" href="https://maps.google.com/?q=Castello+Sforzesco+Milan" target="_blank">📍 スフォルツェスコ城</a>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">12:00〜13:30</div>
+      <div class="item-title">ランチ</div>
+      <div class="item-note">ブレラ周辺・ブライアンツァ通りなど</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Brera+Milan" target="_blank">📍 ブレラ地区</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">13:30〜14:30</div>
+      <div class="item-title">ブレラ美術館 or 周辺散策 → ドゥオモへ移動</div>
+      <div class="item-note">好みでピナコテカ・ブレラ（要チケット）／路地裏カフェ。14:30頃ドゥオモへ向かう</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Pinacoteca+di+Brera+Milan" target="_blank">📍 ブレラ美術館</a></div>
+    </div>
+    <div class="item ticket">
+      <div class="item-time">15:00〜17:00</div>
+      <div class="item-title">ドゥオモ（ミラノ大聖堂）<span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">15:00入場枠。テラス・屋上も含む</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Duomo+di+Milano" target="_blank">📍 ドゥオモ</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">17:00〜19:00 ｜ 約2時間</div>
+      <div class="item-title">ナヴィリオ運河周辺・自由時間</div>
+      <div class="item-note">運河沿いのカフェでアペリティーボ、夕暮れの散歩など</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Navigli+Milan" target="_blank">📍 ナヴィリオ運河</a></div>
+    </div>
+    <div class="item food">
+      <div class="item-time">19:00〜</div>
+      <div class="item-title">ディナー</div>
+      <div class="item-note">ナヴィリオ or 宿の近くでリーズナブルに</div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">夜</div>
+      <div class="item-title">宿泊：モンツァ</div>
+      <div class="item-note">モンツァ駅 → ミラノ中央駅は Trenord で約15〜20分。翌4/28の11:15発に合わせ、9:30〜9:45頃モンツァ駅発を目安に</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.app.goo.gl/B5GknTNUGqjgTdMj6" target="_blank">📍 ホテル地図</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROMA HEADER -->
+<div class="city-header" id="city-roma">
+  <div class="city-header-inner">
+    <div class="city-header-accent" style="background:#B33D20"></div>
+    <div class="city-roman">Roma</div>
+    <div class="city-name">ローマ</div>
+    <div class="city-dates">4月28日 — 4月30日</div>
+  </div>
+</div>
+
+<!-- 4/28 -->
+<div class="day-block" data-date="2026-04-28">
+  <div class="day-label">4/28 (火) — ミラノ → ローマ</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">9:30〜10:30頃</div>
+      <div class="item-title">チェックアウト → モンツァ駅 → ミラノ中央駅【4/27泊】</div>
+      <div class="item-note">モンツァ → ミラノ中央駅は Trenord で約15〜20分。11:15発の30分前にはホーム付近に</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Monza+train+station" target="_blank">📍 モンツァ駅</a>
+        <a class="map-link" href="https://maps.google.com/?q=Milano+Centrale+Station" target="_blank">📍 ミラノ中央駅</a>
+      </div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">11:15</div>
+        <div class="item-title">ミラノ中央駅</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Milano+Centrale+Station" target="_blank">📍 ミラノ中央駅</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">3h15m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">14:30</div>
+        <div class="item-title">ローマ・テルミニ</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Roma+Termini+Station" target="_blank">📍 ローマ・テルミニ</a></div>
+      </div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">15:00〜</div>
+      <div class="item-title">チェックイン：Suite Artis Barberini</div>
+      <div class="item-note">Piazza Barberini 2、バルベリーニ広場目の前</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Piazza+Barberini+2+Rome+Italy" target="_blank">📍 ホテル地図</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">17:00〜</div>
+      <div class="item-title">スペイン広場 → トレヴィの泉（夜景）</div>
+      <div class="item-note">夜のライトアップが幻想的。コインは右手で左肩越しに</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Piazza+di+Spagna+Rome" target="_blank">📍 スペイン広場</a>
+        <a class="map-link" href="https://maps.google.com/?q=Trevi+Fountain+Rome" target="_blank">📍 トレヴィの泉</a>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">22:00〜</div>
+      <div class="item-title">ディナー（CiPASSO）<span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">メタスタシオ通り</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com?q=CiPASSO,%20%E3%83%A1%E3%82%BF%E3%82%B9%E3%82%BF%E3%82%B7%E3%82%AA%E9%80%9A%E3%82%8A%20%E3%83%AD%E3%83%BC%E3%83%9E%20%E3%83%AD%E3%83%BC%E3%83%9E%E7%9C%8C%20%E3%82%A4%E3%82%BF%E3%83%AA%E3%82%A2&ftid=0x132f614297416091:0x31aeccf34c0e27fa" target="_blank">📍 CiPASSO</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4/29 -->
+<div class="day-block" data-date="2026-04-29">
+  <div class="day-label">4/29 (水) — ローマ終日</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">6:15</div>
+      <div class="item-title">ホテル出発 → サン・ピエトロ大聖堂</div>
+      <div class="item-note">地下鉄 or バスで約40分</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">7:00〜7:50</div>
+      <div class="item-title">サン・ピエトロ大聖堂</div>
+      <div class="item-note">開門と同時に入場・予約不要。クーポラ登頂もおすすめ（有料）</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=St+Peters+Basilica+Vatican" target="_blank">📍 サン・ピエトロ大聖堂</a></div>
+    </div>
+    <div class="item ticket">
+      <div class="item-time">8:00〜10:30</div>
+      <div class="item-title">ヴァチカン美術館 <span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">システィーナ礼拝堂も同チケットで入場可</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Vatican+Museums+Rome" target="_blank">📍 ヴァチカン美術館</a>
+        <a class="map-link" href="https://maps.google.com/?q=Sistine+Chapel+Vatican" target="_blank">📍 システィーナ礼拝堂</a>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">11:00〜</div>
+      <div class="item-title">ランチ</div>
+      <div class="item-note">ヴァチカン周辺 or テスタッチョ地区へ移動</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Testaccio+Rome" target="_blank">📍 テスタッチョ地区</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">〜15:00 ｜ 約4時間</div>
+      <div class="item-title">自由時間</div>
+      <div class="item-note">テスタッチョ地区でのんびり。カフェ・市場めぐりや昼寝も</div>
+    </div>
+    <div class="item ticket">
+      <div class="item-time">15:00〜17:15</div>
+      <div class="item-title">コロッセオ・フォロ・ロマーノ <span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">coopculture.it 予約済 ／ 17:30の予約に間に合わせるため17:15頃退出</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Colosseum+Rome" target="_blank">📍 コロッセオ</a>
+        <a class="map-link" href="https://maps.google.com/?q=Roman+Forum+Rome" target="_blank">📍 フォロ・ロマーノ</a>
+      </div>
+    </div>
+    <div class="item food tbd">
+      <div class="item-time">夜</div>
+      <div class="item-title">ディナー（トリュフパスタ）<span class="badge badge-tbd">未定</span></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">20:00〜</div>
+      <div class="item-title">ヴィットーリオ・エマヌエーレ記念堂（夜景）</div>
+      <div class="item-note">テラスからローマ夜景。無料エリアあり・有料エレベーターも</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Altare+della+Patria+Rome" target="_blank">📍 記念堂</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 4/30 Roma -->
+<div class="day-block" data-date="2026-04-30">
+  <div class="day-label">4/30 (木) — チェックアウト → フィレンツェへ</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">8:35</div>
+      <div class="item-title">ホテル出発 → パンテオン【チェックアウト日】</div>
+      <div class="item-note">徒歩約20分・8:55頃到着目安 ／ 荷物はフロントに預けて観光、12:55テルミニ発前に受取</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">9:00〜</div>
+      <div class="item-title">パンテオン → ナヴォーナ広場</div>
+      <div class="item-note">パンテオンは入場要事前予約・入場料あり</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Pantheon+Rome" target="_blank">📍 パンテオン</a>
+        <a class="map-link" href="https://maps.google.com/?q=Piazza+Navona+Rome" target="_blank">📍 ナヴォーナ広場</a>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">11:00〜</div>
+      <div class="item-title">ランチ</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">12:55</div>
+        <div class="item-title">ローマ・テルミニ</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Roma+Termini+Station" target="_blank">📍 ローマ・テルミニ</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">1h35m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">14:31</div>
+        <div class="item-title">フィレンツェSMN</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Firenze+Santa+Maria+Novella+Station" target="_blank">📍 フィレンツェSMN</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIRENZE HEADER -->
+<div class="city-header" id="city-firenze">
+  <div class="city-header-inner">
+    <div class="city-header-accent" style="background:#1F7A52"></div>
+    <div class="city-roman">Firenze</div>
+    <div class="city-name">フィレンツェ</div>
+    <div class="city-dates">4月30日 — 5月3日</div>
+  </div>
+</div>
+
+<!-- 4/30 Firenze -->
+<div class="day-block" data-date="2026-04-30">
+  <div class="day-label">4/30 (木) — フィレンツェ到着</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">15:00〜</div>
+      <div class="item-title">チェックイン：Relais Del Duomo</div>
+      <div class="item-note">Piazza dell'Olio 2、ドゥオモから徒歩1分</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Relais+Del+Duomo+Piazza+dell+Olio+2+Florence" target="_blank">📍 ホテル地図</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">16:00〜</div>
+      <div class="item-title">ヴェッキオ橋 → ピアッツァーレ・ミケランジェロ（夕日）</div>
+      <div class="item-note">アルノ川沿いを歩いてヴェッキオ橋経由で丘へ。徒歩約30分</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Ponte+Vecchio+Florence" target="_blank">📍 ヴェッキオ橋</a>
+        <a class="map-link" href="https://maps.google.com/?q=Piazzale+Michelangelo+Florence" target="_blank">📍 ミケランジェロ広場</a>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">19:30〜</div>
+      <div class="item-title">ディナー</div>
+      <div class="item-note">オルトラルノ地区でビステッカ・アッラ・フィオレンティーナ</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Oltrarno+Florence" target="_blank">📍 オルトラルノ地区</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/1 -->
+<div class="day-block" data-date="2026-05-01">
+  <div class="day-label">5/1 (金) — チケットデー</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">8:00</div>
+      <div class="item-title">ホテル出発 → アカデミア美術館</div>
+      <div class="item-note">徒歩約15分・8:15頃到着目安</div>
+    </div>
+    <div class="item ticket">
+      <div class="item-time">8:15〜9:15</div>
+      <div class="item-title">アカデミア美術館（ダヴィデ像）<span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">Firenze Musei</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Galleria+Accademia+Florence" target="_blank">📍 アカデミア美術館</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">9:15〜10:15</div>
+      <div class="item-title">ウフィツィへ移動・周辺散策</div>
+      <div class="item-note">徒歩約20分。シニョーリア広場周辺でひと休みしながら向かう</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Piazza+della+Signoria+Florence" target="_blank">📍 シニョーリア広場</a></div>
+    </div>
+    <div class="item ticket">
+      <div class="item-time">10:30〜12:30</div>
+      <div class="item-title">ウフィツィ美術館 <span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">ボッティチェッリ「春」「ヴィーナスの誕生」。GW期間は混雑必至</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Uffizi+Gallery+Florence" target="_blank">📍 ウフィツィ美術館</a></div>
+    </div>
+    <div class="item food">
+      <div class="item-time">12:30〜</div>
+      <div class="item-title">ランチ（ビステッカ）</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.app.goo.gl/15EYpARY8sbfieFS8" target="_blank">📍 レストラン</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">〜15:00 ｜ 約2時間</div>
+      <div class="item-title">自由時間</div>
+      <div class="item-note">サン・ロレンツォ地区を散策、革市場や路地裏カフェなど</div>
+    </div>
+    <div class="item ticket">
+      <div class="item-time">15:00〜17:00</div>
+      <div class="item-title">Giotto Pass（ドゥオモ）<span class="badge badge-ok">予約済</span></div>
+      <div class="item-note">クーポラ・鐘楼・洗礼堂を含む</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Florence+Cathedral+Duomo" target="_blank">📍 ドゥオモ</a>
+        <a class="map-link" href="https://maps.google.com/?q=Giottos+Campanile+Florence" target="_blank">📍 ジョットの鐘楼</a>
+      </div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">17:00〜19:30 ｜ 約2時間半</div>
+      <div class="item-title">自由時間</div>
+      <div class="item-note">ヴェッキオ橋周辺でショッピング、カフェでひと休みなど</div>
+    </div>
+    <div class="item food">
+      <div class="item-time">19:30〜</div>
+      <div class="item-title">ディナー</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/2 -->
+<div class="day-block" data-date="2026-05-02">
+  <div class="day-label">5/2 (土) — トスカーナ田園ドライブ</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">9:10</div>
+      <div class="item-title">ホテル出発 → フィレンツェ空港（レンタカー受取）</div>
+      <div class="item-note">タクシーで約35分・9:50頃到着目安</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">10:00</div>
+        <div class="item-title">フィレンツェ空港 — レンタカー受取</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Florence+Airport+Amerigo+Vespucci" target="_blank">📍 フィレンツェ空港</a></div>
+      </div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">〜夕方</div>
+      <div class="item-title">シエナ・ピエンツァ方面ドライブ</div>
+      <div class="item-note">Val d'Orciaの糸杉並木、シエナのカンポ広場、ピエンツァ旧市街</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Piazza+del+Campo+Siena" target="_blank">📍 シエナ・カンポ広場</a>
+        <a class="map-link" href="https://maps.google.com/?q=Pienza+Tuscany" target="_blank">📍 ピエンツァ</a>
+        <a class="map-link" href="https://maps.google.com/?q=Val+d+Orcia+Tuscany" target="_blank">📍 Val d'Orcia</a>
+      </div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">夕方〜</div>
+      <div class="item-title">チェックイン：dimora gentile BnB</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Dimora+Gentile+BnB+Tuscany" target="_blank">📍 ホテル地図</a></div>
+    </div>
+    <div class="item food">
+      <div class="item-time">夜</div>
+      <div class="item-title">ディナー</div>
+      <div class="item-note">トスカーナの農家料理・地元ワインを</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/3 -->
+<div class="day-block" data-date="2026-05-03">
+  <div class="day-label">5/3 (日) — ヴェネツィアへ</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">11:15</div>
+      <div class="item-title">BnB出発 → フィレンツェ空港（レンタカー返却）【チェックアウト日】</div>
+      <div class="item-note">車で約1.5時間・12:45頃到着目安 ／ チェックアウト後に出発</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">〜13:00</div>
+        <div class="item-title">フィレンツェ空港 — レンタカー返却</div>
+        <div class="item-note">返却は15:00まで。余裕を持って13時着を目標に</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Florence+Airport+Amerigo+Vespucci" target="_blank">📍 フィレンツェ空港</a></div>
+      </div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">13:00〜16:20 ｜ 約3時間</div>
+      <div class="item-title">自由時間</div>
+      <div class="item-note">空港周辺でのんびり or フィレンツェ中心部に戻って最後の散策も</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">16:20</div>
+        <div class="item-title">フィレンツェSMN</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Firenze+Santa+Maria+Novella+Station" target="_blank">📍 フィレンツェSMN</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">2h15m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">18:35</div>
+        <div class="item-title">ヴェネツィア・サンタルチア</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Venezia+Santa+Lucia+Station" target="_blank">📍 ヴェネツィアSL駅</a></div>
+      </div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">〜19:30</div>
+      <div class="item-title">チェックイン：Residenza Favaro</div>
+      <div class="item-note">San Marco 2259 (Calle Pedrocchi)</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Residenza+Favaro+San+Marco+2259+Venice" target="_blank">📍 ホテル地図</a></div>
+    </div>
+    <div class="item food">
+      <div class="item-time">19:50〜20:50</div>
+      <div class="item-title">ディナー</div>
+      <div class="item-note">ホテル周辺（サンマルコ近辺）で。選び放題のエリア</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">21:00〜21:40</div>
+      <div class="item-title">サン・マルコ広場（夜）</div>
+      <div class="item-note">初日はここメイン。夜の雰囲気が格別</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Piazza+San+Marco+Venice" target="_blank">📍 サン・マルコ広場</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">21:45〜22:20</div>
+      <div class="item-title">リアルト橋（夜景）</div>
+      <div class="item-note">夜は人が少なく夜景も美しい</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Rialto+Bridge+Venice" target="_blank">📍 リアルト橋</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- VENEZIA HEADER -->
+<div class="city-header" id="city-venezia">
+  <div class="city-header-inner">
+    <div class="city-header-accent" style="background:#5047A0"></div>
+    <div class="city-roman">Venezia</div>
+    <div class="city-name">ヴェネツィア</div>
+    <div class="city-dates">5月3日 — 5月5日</div>
+  </div>
+</div>
+
+<!-- 5/4 -->
+<div class="day-block" data-date="2026-05-04">
+  <div class="day-label">5/4 (月) — ヴェネツィア フル観光</div>
+  <div class="timeline">
+    <div class="item food">
+      <div class="item-time">9:00〜9:40</div>
+      <div class="item-title">朝ごはん</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">10:00〜11:00</div>
+      <div class="item-title">フェニーチェ劇場 見学</div>
+      <div class="item-note">ホテルから徒歩2分</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Teatro+La+Fenice+Venice" target="_blank">📍 フェニーチェ劇場</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">11:00〜12:30 ｜ 約1時間半</div>
+      <div class="item-title">街ブラ（自由時間）</div>
+      <div class="item-note">迷いながら歩くのが一番価値ある</div>
+    </div>
+    <div class="item food">
+      <div class="item-time">12:30〜13:30</div>
+      <div class="item-title">ランチ（リアルト周辺）</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Rialto+Bridge+Venice" target="_blank">📍 リアルト周辺</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">13:30〜14:30</div>
+      <div class="item-title">リアルト橋周辺散策（昼）</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Rialto+Bridge+Venice" target="_blank">📍 リアルト橋</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">15:10〜15:40</div>
+      <div class="item-title">ヴェネツィアのバンクシー作品</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.app.goo.gl/Zq7vhwHAabbWPP497" target="_blank">📍 バンクシー作品</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">15:40〜16:20 ｜ 約40分</div>
+      <div class="item-title">カフェ休憩</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">16:30〜17:00</div>
+      <div class="item-title">ゴンドラ乗船（30分）</div>
+      <div class="item-note">夕方前のベストタイミング</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Gondola+Venice" target="_blank">📍 ゴンドラ乗り場</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">17:15〜18:00 ｜ 約45分</div>
+      <div class="item-title">ホテルで休憩</div>
+    </div>
+    <div class="item food">
+      <div class="item-time">18:30〜</div>
+      <div class="item-title">友人と合流・ディナー</div>
+      <div class="item-note">合流場所・店は現地で調整</div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">20:30〜21:00 ｜ 余裕あれば</div>
+      <div class="item-title">サン・マルコ広場 再訪（夜）</div>
+      <div class="item-note">2回目はまた別の雰囲気</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Piazza+San+Marco+Venice" target="_blank">📍 サン・マルコ広場</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/5 Venice -->
+<div class="day-block" data-date="2026-05-05">
+  <div class="day-label">5/5 (火) — ヴェネツィア → ミラノ</div>
+  <div class="timeline">
+    <div class="item food">
+      <div class="item-time">9:00〜10:00</div>
+      <div class="item-title">朝ごはん</div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">10:00〜11:30</div>
+      <div class="item-title">ラスト散歩（サンマルコ周辺・お土産）</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Piazza+San+Marco+Venice" target="_blank">📍 サンマルコ周辺</a></div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">11:30〜12:15 ｜ 約45分</div>
+      <div class="item-title">ホテル戻り・荷物まとめ</div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">12:15</div>
+      <div class="item-title">ホテル出発 → ヴェネツィア・サンタルチア駅【チェックアウト日】</div>
+      <div class="item-note">ヴァポレット約45分・13:00頃到着目安 ／ チェックアウト後に出発</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">13:57</div>
+        <div class="item-title">ヴェネツィア・サンタルチア</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Venezia+Santa+Lucia+Station" target="_blank">📍 ヴェネツィアSL駅</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">2h30m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">16:25</div>
+        <div class="item-title">ミラノ中央駅</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Milano+Centrale+Station" target="_blank">📍 ミラノ中央駅</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MILANO RETURN HEADER -->
+<div class="city-header" id="city-milano">
+  <div class="city-header-inner">
+    <div class="city-header-accent" style="background:#8B7A52"></div>
+    <div class="city-roman">Milano · Lago di Como</div>
+    <div class="city-name">ミラノ</div>
+    <div class="city-dates">5月5日〜5月6日 ／ サロンノ泊 5月7日 ／ 帰国 5月8日</div>
+  </div>
+</div>
+
+<!-- 5/5 Milano -->
+<div class="day-block" data-date="2026-05-05">
+  <div class="day-label">5/5 (火) — ミラノ到着夜</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">〜17:00</div>
+      <div class="item-title">チェックイン：ホテルベルーナ</div>
+      <div class="item-note">Via Napo Torriani 18、中央駅すぐ</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Via+Napo+Torriani+18+Milan" target="_blank">📍 ホテル地図</a></div>
+    </div>
+    <div class="item food">
+      <div class="item-time">19:30〜</div>
+      <div class="item-title">ディナー</div>
+      <div class="item-note">ナヴィリオ運河沿いのアペリティーボ〜ディナーが定番</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Navigli+Milan" target="_blank">📍 ナヴィリオ運河</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/6 -->
+<div class="day-block" data-date="2026-05-06">
+  <div class="day-label">5/6 (水) — ゆったり・自由日（ミラノ）</div>
+  <div class="timeline">
+    <div class="item free-time">
+      <div class="item-time">午前 ｜ 自由</div>
+      <div class="item-title">のんびり朝〜昼</div>
+      <div class="item-note">4/27に回した観光の再訪、買い物の続き、カフェ、ホテル近くの散歩など。体調・気分で調整</div>
+      <div class="item-footer">
+        <a class="map-link" href="https://maps.google.com/?q=Duomo+di+Milano" target="_blank">📍 ドゥオモ</a>
+        <a class="map-link" href="https://maps.google.com/?q=Navigli+Milan" target="_blank">📍 ナヴィリオ運河</a>
+      </div>
+    </div>
+    <div class="item free-time">
+      <div class="item-time">午後 ｜ 自由</div>
+      <div class="item-title">午後も自由</div>
+      <div class="item-note">翌5/7は早朝からコモ湖。無理せず早めに休んでもよい日</div>
+    </div>
+    <div class="item food">
+      <div class="item-time">夜</div>
+      <div class="item-title">食事（任意）</div>
+      <div class="item-note">軽めのアペリティーボだけでも可</div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">夜</div>
+      <div class="item-title">宿泊：ホテルベルーナ（ミラノ中央駅）</div>
+      <div class="item-note">コモ湖へは駅近からそのまま移動しやすい</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Via+Napo+Torriani+18+Milan" target="_blank">📍 ホテル地図</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/7 -->
+<div class="day-block" data-date="2026-05-07">
+  <div class="day-label">5/7 (木) — コモ湖（午前：バルビアネッロ → 午後：ベラジオ・ヴァレンナ）／サロンノ泊</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">6:40</div>
+      <div class="item-title">ホテル出発 → ミラノ中央駅</div>
+      <div class="item-note">バルビアネッロは午後は混みやすいので、開館直後〜午前中の枠を狙う。早めの出発推奨</div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">7:05頃</div>
+        <div class="item-title">ミラノ中央駅 発 → Como S. Giovanni</div>
+        <div class="item-note">ヴァレンナ直行せず、まずコモへ。レンノ（バルビアネッロ側）に午前で入る動線</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Milano+Centrale+Station" target="_blank">📍 ミラノ中央駅</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">約40m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">7:45頃</div>
+        <div class="item-title">Como S. Giovanni 着</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Como+San+Giovanni+Station" target="_blank">📍 Como S. Giovanni</a></div>
+      </div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">8:00頃〜</div>
+        <div class="item-title">Como → レンノ（Lenno）</div>
+        <div class="item-note">ASF C10 バス（コモ〜メナッジオ方面・レンノ停車）または Navigazione の湖船。早朝〜午前の便は前日に時刻表で確定。バス停は駅近の案内に従う</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Lenno+Lake+Como" target="_blank">📍 レンノ</a></div>
+      </div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">9:00〜11:00</div>
+      <div class="item-title">Villa del Balbianello（バルビアネッロ邸）<span class="badge badge-warn">要予約・午前枠</span></div>
+      <div class="item-note">混雑回避のため開館直後〜午前の入場時間で予約（FAI公式・時間指定）。レンノ港からシャトルボート（有料・季節）または徒歩の案内に従う</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Villa+del+Balbianello+Lenno+Italy" target="_blank">📍 Villa del Balbianello</a></div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">11:15頃</div>
+        <div class="item-title">フェリーでベラジオへ</div>
+        <div class="item-note">レンノ港発。ダイヤで接続を確認</div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">約30〜40m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">11:55頃</div>
+        <div class="item-title">ベラジオ着</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Bellagio+Lake+Como" target="_blank">📍 ベラジオ</a></div>
+      </div>
+    </div>
+    <div class="item food">
+      <div class="item-time">12:15〜13:30</div>
+      <div class="item-title">ランチ</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Bellagio+Lake+Como" target="_blank">📍 ベラジオ</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">13:45〜15:00</div>
+      <div class="item-title">Villa Melzi d'Eril 庭園</div>
+      <div class="item-note">湖畔に広がる19世紀の貴族の庭園。ツツジ・睡蓮が美しく、5月は花が見頃。入場料あり（€8前後）</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Villa+Melzi+Bellagio" target="_blank">📍 Villa Melzi d'Eril</a></div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">15:00〜16:00</div>
+      <div class="item-title">ベラジオ街散策</div>
+      <div class="item-note">石畳の坂道・路地・ショッピング。絹製品やみやげなど</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Bellagio+Lake+Como" target="_blank">📍 ベラジオ</a></div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">16:10頃</div>
+        <div class="item-title">フェリーでヴァレンナへ</div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">20m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">16:30頃</div>
+        <div class="item-title">ヴァレンナ着</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Varenna+Lake+Como" target="_blank">📍 ヴァレンナ</a></div>
+      </div>
+    </div>
+    <div class="item sightseeing">
+      <div class="item-time">16:45〜18:00</div>
+      <div class="item-title">Villa Monastero</div>
+      <div class="item-note">閉館時刻は季節で変わる。間に合わなければ外観〜湖畔のみに短縮。入場料あり</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.app.goo.gl/pEdsYmUZm7hK94Xr9" target="_blank">📍 Villa Monastero</a></div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">18:15頃〜</div>
+        <div class="item-title">ヴァレンナ → サロンノ</div>
+        <div class="item-note">ヴァレンナ・エジーノ駅からレッコ方面へ乗車し、レッコ or ミラノ経由でサロンノへ。乗り換え含め約1.5〜2時間。当日ダイヤは前日に確認を</div>
+        <div class="item-footer">
+          <a class="map-link" href="https://maps.google.com/?q=Varenna+Esino+Station" target="_blank">📍 Varenna Esino</a>
+          <a class="map-link" href="https://maps.google.com/?q=Saronno+train+station+Italy" target="_blank">📍 サロンノ駅</a>
+        </div>
+      </div>
+    </div>
+    <div class="item hotel">
+      <div class="item-time">20:00〜20:30頃</div>
+      <div class="item-title">チェックイン：サロンノ</div>
+      <div class="item-note">翌5/8は Malpensa Express がサロンノ停車。MXP空港まで約25〜35分と好アクセス</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.app.goo.gl/MaofBiDorANSc74w7" target="_blank">📍 ホテル地図</a></div>
+    </div>
+    <div class="item food">
+      <div class="item-time">20:30〜</div>
+      <div class="item-title">ディナー</div>
+      <div class="item-note">サロンノ市内で軽めに</div>
+    </div>
+  </div>
+</div>
+
+<!-- 5/8 -->
+<div class="day-block" data-date="2026-05-08">
+  <div class="day-label">5/8 (金) — 帰国（サロンノ発）</div>
+  <div class="timeline">
+    <div class="item hotel">
+      <div class="item-time">8:30〜9:00頃</div>
+      <div class="item-title">ホテル出発 → サロンノ駅【チェックアウト日】</div>
+      <div class="item-note">サロンノ泊。荷物は前夜にまとめておく。サロンノ駅まで徒歩〜約10分程度</div>
+      <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Saronno+train+station+Italy" target="_blank">📍 サロンノ駅</a></div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">9:00〜9:10頃</div>
+        <div class="item-title">サロンノ → マルペンサ空港(MXP)</div>
+        <div class="item-note">Malpensa Express（Trenord）。T1／T2 はフライトに合わせる。前日にダイヤ確認を</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Saronno+train+station+Italy" target="_blank">📍 サロンノ駅</a></div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">約25〜35m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">9:35〜9:45頃</div>
+        <div class="item-title">マルペンサ空港 着</div>
+        <div class="item-note">フライト11:40の約2時間前に到着</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Milan+Malpensa+Airport" target="_blank">📍 MXP空港</a></div>
+      </div>
+    </div>
+    <div class="item transport">
+      <div class="transport-stop">
+        <div class="item-time">11:40</div>
+        <div class="item-title">ミラノ(MXP)</div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">8h</span></div>
+      <div class="transport-stop">
+        <div class="item-time">19:40</div>
+        <div class="item-title">アブダビ 着</div>
+        <div class="item-note">EY82 / 乗継 1h45m</div>
+      </div>
+      <div class="transport-connector"><span class="transport-time">9h10m</span></div>
+      <div class="transport-stop">
+        <div class="item-time">5/9 12:35</div>
+        <div class="item-title">成田</div>
+        <div class="item-note">EY802</div>
+        <div class="item-footer"><a class="map-link" href="https://maps.google.com/?q=Narita+International+Airport" target="_blank">📍 成田国際空港</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="height:1rem;"></div>
+</div><!-- /container -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Free time toggle
+let freeHidden = false;
+function toggleFreeTime() {
+  freeHidden = !freeHidden;
+  document.body.classList.toggle('hide-free-time', freeHidden);
+  const lbl = freeHidden ? '–' : '✓';
+  document.getElementById('ftCheck1').textContent = lbl;
+  document.getElementById('ftCheck2').textContent = lbl;
+  document.getElementById('stickyFtBtn').classList.toggle('off', freeHidden);
+  document.getElementById('legendFtBtn').classList.toggle('off', freeHidden);
+}
+
+// City quick-jump
+document.querySelectorAll('.city-nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const el = document.getElementById(btn.dataset.target);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Sticky bar on scroll past hero
+const hero = document.getElementById('hero');
+const stickyBar = document.getElementById('stickyBar');
+new IntersectionObserver(entries => {
+  stickyBar.classList.toggle('visible', !entries[0].isIntersecting);
+}, { threshold: 0 }).observe(hero);
+
+// Today highlight & auto-scroll
+(function() {
+  const today = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const s = today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+  let first = null;
+  document.querySelectorAll('.day-block[data-date]').forEach(b => {
+    if (b.dataset.date === s) { b.classList.add('is-today'); if (!first) first = b; }
+  });
+  if (first) setTimeout(() => first.scrollIntoView({ behavior: 'smooth', block: 'start' }), 400);
+})();
+
+// City nav active state
+(function() {
+  const ids = ['city-roma','city-firenze','city-venezia','city-milano'];
+  const btns = document.querySelectorAll('.city-nav-btn');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) btns.forEach(b => b.classList.toggle('active', b.dataset.target === e.target.id)); });
+  }, { rootMargin: '-10% 0px -65% 0px' });
+  ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+})();
+
+// Route map
+let mapReady = false;
+function toggleMap(btn) {
+  const body = document.getElementById('routeMapBody');
+  const chevron = btn.querySelector('.route-map-chevron');
+  const open = body.classList.toggle('open');
+  chevron.classList.toggle('open', open);
+  if (open && !mapReady) { mapReady = true; setTimeout(initMap, 60); }
+}
+
+function initMap() {
+  const map = L.map('routeMap', { zoomControl: false, attributionControl: false }).setView([43.8, 11.5], 6);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+  const cities = [
+    { name: 'ミラノ',      coords: [45.4642, 9.1900],  color: '#8B7A52' },
+    { name: 'ローマ',      coords: [41.9028, 12.4964], color: '#B33D20' },
+    { name: 'フィレンツェ', coords: [43.7696, 11.2558], color: '#1F7A52' },
+    { name: 'ヴェネツィア', coords: [45.4408, 12.3155], color: '#5047A0' },
+    { name: 'コモ湖',      coords: [45.9827, 9.2759],  color: '#2563A8' },
+  ];
+
+  L.polyline([
+    [45.4642, 9.1900], [41.9028, 12.4964], [43.7696, 11.2558],
+    [45.4408, 12.3155], [45.4642, 9.1900], [45.9827, 9.2759]
+  ], { color: '#B33D20', weight: 1.5, dashArray: '5,5', opacity: 0.45 }).addTo(map);
+
+  cities.forEach(c => {
+    L.marker(c.coords, { icon: L.divIcon({
+      className: '',
+      html: `<div style="background:${c.color};width:9px;height:9px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.22)"></div>`,
+      iconSize: [13,13], iconAnchor: [6,6]
+    })}).addTo(map).bindPopup(c.name);
+  });
+}
+</script>
+</body>
+</html>

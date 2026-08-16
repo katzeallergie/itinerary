@@ -6,6 +6,7 @@
 
 - トップ（一覧）: `https://katzeallergie.github.io/itinerary/`
 - クリスマス旅行: `https://katzeallergie.github.io/itinerary/trips/2026-12-christmas-europe/`
+- イタリア旅行: `https://katzeallergie.github.io/itinerary/trips/2026-04-italy/`
 
 ## 新しい旅程を追加する手順
 
