@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Christmas Europe 2026 | Vienna–Prague–Nuremberg–Munich–Salzburg–Hallstatt</title>
+<title>Christmas Europe 2026 | Vienna–Prague–Dresden–Berlin–Munich–Salzburg–Hallstatt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -299,8 +299,8 @@
 <div class="snow" id="snow"></div>
 
 <header class="hero">
-  <div class="eyebrow">Christmas Rail Journey · Mitteleuropa</div>
-  <h1 class="title">Wien <em>—</em> Praha <em>—</em> Nürnberg <em>—</em> München <em>—</em> Salzburg <em>—</em> Hallstatt</h1>
+  <div class="eyebrow">Christmas Rail Journey · Mitteleuropa × Germany Crossing</div>
+  <h1 class="title">Wien <em>—</em> Praha <em>—</em> Dresden <em>—</em> Berlin <em>—</em> München <em>—</em> Salzburg <em>—</em> Hallstatt</h1>
   <div class="subtitle">10 NIGHTS · ANA HANEDA ROUND TRIP · RAIL &amp; CHRISTKINDLMARKT</div>
   <div class="date-range"><span class="dot"></span>2026.12.19 (SAT) — 2026.12.29 (TUE)</div>
 </header>
@@ -338,113 +338,94 @@ const DAYS = [
     ]
   },
   {
-    date:"12/20", dow:"日", city:"ウィーン", n:"DAY 2 · Wien ①",
+    date:"12/20", dow:"日", city:"ウィーン", n:"DAY 2 · Wien",
     events:[
       {time:"06:20", title:"ウィーン到着", desc:""},
-      {time:"08:30", title:"ホテルへ荷物預け", desc:""},
-      {time:"09:30", title:"シュテファン大聖堂・グラーベン通り散策", desc:"〜12:00"},
-      {time:"12:00", title:"ランチ", desc:""},
-      {time:"13:30", title:"シェーンブルン宮殿・クリスマスマーケット", desc:"〜16:30"},
-      {time:"17:00", title:"市庁舎前クリスマスマーケット", desc:"〜20:00"},
-      {time:"—", title:"ウィーン泊", desc:"", hotel:true}
+      {time:"—", title:"ホテルに荷物を預けて市内散策＆クリスマスマーケット", desc:""},
+      {time:"—", title:"ウィーン泊", desc:"ウィーン中央駅周辺", hotel:true}
     ]
   },
   {
-    date:"12/21", dow:"月", city:"プラハ", n:"DAY 3 · Praha ①",
+    date:"12/21", dow:"月", city:"プラハ", n:"DAY 3 · Wien → Praha",
     events:[
-      {time:"07:00", title:"朝食", desc:""},
-      {time:"08:10", title:"Railjetでプラハへ", desc:"所要 約4時間"},
-      {time:"12:30", title:"到着・ランチ", desc:""},
-      {time:"14:00", title:"旧市街・天文時計・クリスマスマーケット", desc:"〜18:00"},
-      {time:"夜", title:"カレル橋ライトアップ", desc:""},
-      {time:"—", title:"プラハ泊", desc:"", hotel:true}
+      {time:"午前", title:"Railjetでプラハへ移動", desc:"約4時間"},
+      {time:"午後", title:"カレル橋、旧市街広場のクリスマスマーケット", desc:""},
+      {time:"—", title:"プラハ泊", desc:"プラハ本駅周辺", hotel:true}
     ]
   },
   {
-    date:"12/22", dow:"火", city:"プラハ", n:"DAY 4 · Praha ②",
+    date:"12/22", dow:"火", city:"ドレスデン", n:"DAY 4 · Praha → Dresden",
     events:[
-      {time:"08:00", title:"朝食", desc:""},
-      {time:"09:00", title:"プラハ城", desc:"聖ヴィート大聖堂・黄金の小路"},
-      {time:"12:00頃", title:"ランチ", desc:""},
-      {time:"午後", title:"マラー・ストラナ地区・ペトシーン周辺散策", desc:"時間があれば"},
-      {time:"夜", title:"クリスマスマーケット", desc:""},
-      {time:"—", title:"プラハ泊", desc:"", hotel:true}
+      {time:"午前", title:"プラハ城見学", desc:""},
+      {time:"午後", title:"電車でドレスデンへ移動", desc:"約2.5時間"},
+      {time:"夜", title:"シュトリーツェルマルクト", desc:"ドイツ最古のクリスマスマーケット"},
+      {time:"—", title:"ドレスデン泊", desc:"ドレスデン中央駅周辺", hotel:true}
     ]
   },
   {
-    date:"12/23", dow:"水", city:"ニュルンベルク", n:"DAY 5 · Nürnberg",
+    date:"12/23", dow:"水", city:"ベルリン", n:"DAY 5 · Dresden → Berlin",
     events:[
-      {time:"08:00", title:"プラハ発", desc:""},
-      {time:"12:30", title:"ニュルンベルク着・ランチ", desc:""},
-      {time:"午後", title:"旧市街・皇帝城", desc:""},
-      {time:"夕方〜夜", title:"クリストキントレスマルクト", desc:""},
-      {time:"—", title:"ニュルンベルク泊", desc:"", hotel:true}
+      {time:"午前", title:"電車でベルリンへ移動", desc:"約2時間"},
+      {time:"午後", title:"ユダヤ博物館見学", desc:""},
+      {time:"夜", title:"ジャンダルメンマルクトなど市内散策", desc:""},
+      {time:"—", title:"ベルリン泊", desc:"ベルリン中央駅周辺", hotel:true}
     ]
   },
   {
-    date:"12/24", dow:"木", city:"ミュンヘン", n:"DAY 6 · München ①",
+    date:"12/24", dow:"木", city:"ミュンヘン", n:"DAY 6 · Berlin → München（クリスマスイブ）",
     events:[
-      {time:"午前", title:"ニュルンベルク散策", desc:""},
-      {time:"11:30", title:"ミュンヘンへ", desc:""},
-      {time:"13:00頃", title:"到着・ランチ", desc:""},
-      {time:"午後", title:"マリエン広場・新市庁舎・ヴィクトアリエン市場", desc:""},
-      {time:"夜", title:"レジデンツ周辺散策", desc:""},
-      {time:"—", title:"ミュンヘン泊", desc:"", hotel:true}
+      {time:"午前", title:"デパ地下やスーパーでイブの食料買い出し", desc:""},
+      {time:"昼", title:"ICE（高速鉄道）でミュンヘンへ移動", desc:"約4時間"},
+      {time:"夕方", title:"ホテルチェックイン＆静かな夜の街を散策", desc:""},
+      {time:"—", title:"ミュンヘン泊", desc:"ミュンヘン中央駅北口周辺", hotel:true}
     ]
   },
   {
-    date:"12/25", dow:"金", city:"ミュンヘン", n:"DAY 7 · München ②",
+    date:"12/25", dow:"金", city:"ミュンヘン", n:"DAY 7 · München（クリスマス当日・観劇）",
     events:[
-      {time:"朝", title:"BMWワールド または ニンフェンブルク宮殿", desc:""},
-      {time:"昼", title:"ビアホール", desc:""},
-      {time:"15:00", title:"くるみ割り人形 🩰", desc:"15時公演想定"},
-      {time:"18:00", title:"夕食", desc:""},
-      {time:"—", title:"ミュンヘン泊", desc:"", hotel:true}
+      {time:"午前", title:"英国庭園や市内をゆったり散策", desc:""},
+      {time:"15:00–17:00", title:"バレエ『くるみ割り人形』鑑賞 🩰", desc:""},
+      {time:"—", title:"ミュンヘン泊", desc:"2連泊目", hotel:true}
     ]
   },
   {
-    date:"12/26", dow:"土", city:"ザルツブルク", n:"DAY 8 · Salzburg",
+    date:"12/26", dow:"土", city:"ザルツブルク", n:"DAY 8 · Neuschwanstein → Salzburg",
     events:[
-      {time:"08:00頃", title:"列車でザルツブルクへ", desc:"所要 約1時間30〜40分"},
-      {time:"10:00頃", title:"到着・旧市街・モーツァルト広場", desc:""},
-      {time:"12:00頃", title:"ランチ", desc:""},
-      {time:"午後", title:"ホーエンザルツブルク城塞・ミラベル庭園", desc:""},
-      {time:"—", title:"ザルツブルク泊", desc:"", hotel:true}
+      {time:"朝", title:"手ぶらでフュッセン（ノイシュヴァンシュタイン城）へ往復", desc:""},
+      {time:"夕方", title:"ミュンヘンで荷物を回収、電車でザルツブルクへ移動", desc:"約1.5時間"},
+      {time:"—", title:"ザルツブルク泊", desc:"ザルツブルク中央駅周辺", hotel:true}
     ]
   },
   {
-    date:"12/27", dow:"日", city:"ハルシュタット", n:"DAY 9 · Hallstatt",
+    date:"12/27", dow:"日", city:"ハルシュタット", n:"DAY 9 · Salzburg → Hallstatt",
     events:[
-      {time:"09:00頃", title:"列車移動", desc:"所要 約2時間半〜3時間"},
-      {time:"12:00頃", title:"ハルシュタット着・ランチ", desc:""},
-      {time:"午後", title:"湖畔散策・展望スポット・写真撮影", desc:""},
-      {time:"夕暮れ", title:"湖畔", desc:""},
-      {time:"夜", title:"静かなハルシュタット散策", desc:""},
-      {time:"—", title:"ハルシュタット泊", desc:"", hotel:true}
+      {time:"午前", title:"ザルツブルク市内散策", desc:"大きな荷物は駅等に預ける"},
+      {time:"午後", title:"ハルシュタットへ移動", desc:"バス/電車/船で約2.5時間"},
+      {time:"夕刻〜夜", title:"静寂のハルシュタット夜景を満喫", desc:"日帰り客が引いた後の時間帯"},
+      {time:"—", title:"ハルシュタット泊", desc:"湖畔エリア", hotel:true}
     ]
   },
   {
-    date:"12/28", dow:"月", city:"ウィーン", n:"DAY 10 · Wien ②",
+    date:"12/28", dow:"月", city:"ウィーン", n:"DAY 10 · Hallstatt → Wien",
     events:[
-      {time:"朝", title:"ハルシュタット散策", desc:""},
-      {time:"09:30〜10:00頃", title:"出発", desc:""},
-      {time:"13:00〜14:00頃", title:"ウィーン着", desc:""},
-      {time:"午後", title:"自由時間", desc:"買い物・カフェ・行けなかった場所"},
-      {time:"夜", title:"最後のディナー", desc:""},
-      {time:"—", title:"ウィーン泊", desc:"", hotel:true}
+      {time:"朝", title:"早朝の幻想的なハルシュタット湖畔を散策", desc:""},
+      {time:"午前〜昼", title:"ハルシュタット発、アトナング・プハイム経由でウィーンへ", desc:"約3.5時間"},
+      {time:"午後", title:"カフェでお茶、お土産買い出し、ディナー", desc:""},
+      {time:"—", title:"ウィーン泊", desc:"ウィーン中央駅周辺", hotel:true}
     ]
   },
   {
-    date:"12/29", dow:"火", city:"帰国", n:"DAY 11",
+    date:"12/29", dow:"火", city:"帰国", n:"DAY 11 · Wien → 帰国",
     events:[
-      {time:"早朝", title:"空港へ", desc:""},
-      {time:"午前便", title:"ウィーン発", desc:"羽田へ"}
+      {time:"07:00", title:"空港へ移動", desc:""},
+      {time:"10:00", title:"ウィーン発", desc:""},
+      {time:"—", title:"機内泊", desc:"羽田へ", hotel:true}
     ]
   }
 ];
 
 const stopsForRoute = [
-  {city:"WIEN", d:"D2"},{city:"PRAHA", d:"D3–4"},{city:"NÜRNBERG", d:"D5"},
+  {city:"WIEN", d:"D2"},{city:"PRAHA", d:"D3"},{city:"DRESDEN", d:"D4"},{city:"BERLIN", d:"D5"},
   {city:"MÜNCHEN", d:"D6–7"},{city:"SALZBURG", d:"D8"},{city:"HALLSTATT", d:"D9"},{city:"WIEN", d:"D10"}
 ];
 
