@@ -302,7 +302,7 @@
   <div class="eyebrow">Christmas Rail Journey · Mitteleuropa</div>
   <h1 class="title">Wien <em>—</em> Praha <em>—</em> Nürnberg <em>—</em> München <em>—</em> Salzburg <em>—</em> Hallstatt</h1>
   <div class="subtitle">10 NIGHTS · ANA HANEDA ROUND TRIP · RAIL &amp; CHRISTKINDLMARKT</div>
-  <div class="date-range"><span class="dot"></span>2026.12.19 (FRI) — 2026.12.29 (TUE)</div>
+  <div class="date-range"><span class="dot"></span>2026.12.19 (SAT) — 2026.12.29 (TUE)</div>
 </header>
 
 <div class="route-wrap">
@@ -331,7 +331,7 @@
 <script>
 const DAYS = [
   {
-    date:"12/19", dow:"金", city:"羽田 → 機内", n:"DAY 1",
+    date:"12/19", dow:"土", city:"羽田 → 機内", n:"DAY 1",
     events:[
       {time:"22:45", title:"羽田出発（ANA）", desc:"ウィーンへ向けて出発"},
       {time:"—", title:"機内泊", desc:"機内でひと晩", hotel:true}
@@ -511,7 +511,7 @@ DAYS.forEach((d,i)=>{
 });
 
 let current = 0;
-function showDay(i){
+function showDay(i, doScroll=true){
   current = i;
   document.querySelectorAll('.day').forEach(el=>el.classList.toggle('active', +el.dataset.idx===i));
   document.querySelectorAll('.tabbtn').forEach(el=>el.classList.toggle('active', +el.dataset.idx===i));
@@ -519,11 +519,11 @@ function showDay(i){
   document.getElementById('nextBtn').disabled = i===DAYS.length-1;
   const activeTab = document.querySelector('.tabbtn.active');
   if(activeTab) activeTab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
-  window.scrollTo({top:0, behavior:'smooth'});
+  if(doScroll) navEl.scrollIntoView({behavior:'smooth', block:'start'});
 }
 document.getElementById('prevBtn').onclick = ()=>{ if(current>0) showDay(current-1); };
 document.getElementById('nextBtn').onclick = ()=>{ if(current<DAYS.length-1) showDay(current+1); };
-showDay(0);
+showDay(0, false);
 
 // snow
 const snowEl = document.getElementById('snow');
