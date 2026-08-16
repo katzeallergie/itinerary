@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Itinerary Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0b1220;
+    --navy-panel:#16213e;
+    --frost:#7fa3c4;
+    --frost-dim:#4f6a86;
+    --cream:#f2ead9;
+    --gold:#d4a24c;
+    --gold-bright:#e8c069;
+    --line:rgba(212,162,76,0.25);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:radial-gradient(ellipse at top, #17213a 0%, var(--navy-deep) 55%), var(--navy-deep);
+    color:var(--cream);
+    font-family:'Work Sans', sans-serif;
+    font-weight:300;
+    min-height:100vh;
+  }
+  header{
+    padding:60px 24px 30px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+  }
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    letter-spacing:0.35em;
+    font-size:11px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:16px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,5vw,44px);
+    margin:0;
+    color:var(--cream);
+  }
+  main{max-width:720px;margin:0 auto;padding:40px 24px 80px;}
+  .board-head{
+    display:grid;
+    grid-template-columns:100px 1fr 90px;
+    gap:12px;
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.15em;
+    color:var(--frost-dim);
+    text-transform:uppercase;
+    padding:0 18px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  a.trip{
+    display:grid;
+    grid-template-columns:100px 1fr 90px;
+    gap:12px;
+    align-items:center;
+    padding:20px 18px;
+    text-decoration:none;
+    color:inherit;
+    border-bottom:1px solid var(--line);
+    transition:background .2s;
+  }
+  a.trip:hover{background:var(--navy-panel);}
+  .trip-date{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    color:var(--gold-bright);
+  }
+  .trip-name{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:18px;
+    color:var(--cream);
+  }
+  .trip-route{
+    font-size:12.5px;
+    color:var(--frost);
+    margin-top:3px;
+    font-weight:300;
+  }
+  .trip-status{
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    text-align:right;
+    color:var(--frost-dim);
+    letter-spacing:0.08em;
+  }
+  .trip-status.upcoming{color:var(--gold);}
+  footer{
+    text-align:center;
+    padding:20px 24px 40px;
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    color:var(--frost-dim);
+    letter-spacing:0.08em;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Departure Board</div>
+  <h1>Itinerary Archive</h1>
+</header>
+<main>
+  <div class="board-head">
+    <span>Date</span><span>Trip</span><span style="text-align:right">Status</span>
+  </div>
+
+  <!-- ============================================================
+       新しい旅程を追加する場合は、この <a class="trip">...</a> ブロックを
+       コピーして中身を書き換え、上に追加してください（新しい順）。
+       ============================================================ -->
+
+  <a class="trip" href="trips/2026-12-christmas-europe/index.html">
+    <span class="trip-date">2026.12</span>
+    <span>
+      <span class="trip-name">Christmas Mitteleuropa</span>
+      <div class="trip-route">Wien – Praha – Nürnberg – München – Salzburg – Hallstatt</div>
+    </span>
+    <span class="trip-status upcoming">UPCOMING</span>
+  </a>
+
+</main>
+<footer>katzeallergie / itinerary</footer>
+</body>
+</html>

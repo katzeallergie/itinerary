@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Christmas Europe 2026 | Vienna–Prague–Nuremberg–Munich–Salzburg–Hallstatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0b1220;
+    --navy:#111c30;
+    --navy-panel:#16213e;
+    --frost:#7fa3c4;
+    --frost-dim:#4f6a86;
+    --cream:#f2ead9;
+    --gold:#d4a24c;
+    --gold-bright:#e8c069;
+    --wine:#9a4a4a;
+    --line:rgba(212,162,76,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top, #17213a 0%, var(--navy-deep) 55%),
+      var(--navy-deep);
+    color:var(--cream);
+    font-family:'Work Sans', sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  /* subtle falling snow */
+  .snow{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0;opacity:0.5;}
+  .flake{position:absolute;top:-10px;background:var(--cream);border-radius:50%;opacity:0.6;animation:fall linear infinite;}
+  @keyframes fall{
+    to{transform:translateY(105vh) translateX(10px);}
+  }
+
+  header.hero{
+    position:relative;
+    padding:64px 24px 40px;
+    text-align:center;
+    border-bottom:1px solid var(--line);
+    z-index:1;
+  }
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    letter-spacing:0.35em;
+    font-size:11px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  h1.title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:clamp(28px,5vw,52px);
+    margin:0 0 10px;
+    letter-spacing:0.01em;
+    color:var(--cream);
+  }
+  h1.title em{
+    font-style:italic;
+    font-weight:500;
+    color:var(--gold-bright);
+  }
+  .subtitle{
+    font-family:'Space Mono', monospace;
+    font-size:12px;
+    color:var(--frost);
+    letter-spacing:0.08em;
+  }
+  .date-range{
+    margin-top:22px;
+    display:inline-flex;
+    gap:10px;
+    align-items:center;
+    font-family:'Space Mono',monospace;
+    font-size:13px;
+    color:var(--cream);
+    background:var(--navy-panel);
+    border:1px solid var(--line);
+    padding:8px 18px;
+    border-radius:2px;
+  }
+  .date-range .dot{width:5px;height:5px;background:var(--gold);border-radius:50%;}
+
+  /* Route line diagram */
+  .route-wrap{
+    max-width:920px;
+    margin:48px auto 0;
+    padding:0 24px;
+    position:relative;
+    z-index:1;
+  }
+  .route-label{
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.25em;
+    color:var(--frost-dim);
+    text-transform:uppercase;
+    margin-bottom:14px;
+    text-align:center;
+  }
+  .route-svg{width:100%;height:auto;display:block;}
+  .route-city{
+    font-family:'Fraunces',serif;
+    font-size:12.5px;
+    fill:var(--cream);
+    font-weight:600;
+  }
+  .route-city.repeat{fill:var(--frost);}
+  .route-days{
+    font-family:'Space Mono',monospace;
+    font-size:8.5px;
+    fill:var(--frost-dim);
+  }
+
+  /* Day nav tabs */
+  nav.daynav{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:rgba(11,18,32,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+    display:flex;
+    overflow-x:auto;
+    gap:2px;
+    padding:0 12px;
+    margin-top:52px;
+    scrollbar-width:thin;
+  }
+  nav.daynav::-webkit-scrollbar{height:4px;}
+  nav.daynav::-webkit-scrollbar-thumb{background:var(--frost-dim);}
+  .tabbtn{
+    flex:0 0 auto;
+    background:none;
+    border:none;
+    color:var(--frost-dim);
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    padding:16px 14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+    transition:color .2s, border-color .2s;
+  }
+  .tabbtn .tabcity{
+    display:block;
+    font-family:'Work Sans',sans-serif;
+    font-size:9.5px;
+    letter-spacing:0.05em;
+    margin-top:2px;
+    color:inherit;
+    opacity:0.85;
+  }
+  .tabbtn:hover{color:var(--cream);}
+  .tabbtn.active{color:var(--gold-bright);border-bottom-color:var(--gold);}
+
+  main{max-width:760px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+
+  .day{display:none;padding-top:44px;animation:fadein .35s ease;}
+  .day.active{display:block;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .day-head{margin-bottom:34px;border-bottom:1px solid var(--line);padding-bottom:22px;}
+  .day-date{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    color:var(--gold);
+    letter-spacing:0.1em;
+  }
+  .day-city{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:clamp(26px,4.5vw,38px);
+    margin:6px 0 0;
+    color:var(--cream);
+  }
+  .day-city .n{
+    font-family:'Space Mono',monospace;
+    font-size:13px;
+    color:var(--frost-dim);
+    font-weight:400;
+    margin-left:10px;
+  }
+
+  .timeline{position:relative;padding-left:6px;}
+  .timeline::before{
+    content:'';
+    position:absolute;
+    left:56px;
+    top:6px;
+    bottom:6px;
+    width:1px;
+    background:linear-gradient(to bottom, var(--line), var(--line) 90%, transparent);
+  }
+  .event{
+    display:grid;
+    grid-template-columns:56px 30px 1fr;
+    gap:0 16px;
+    margin-bottom:26px;
+    position:relative;
+  }
+  .flap{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    color:var(--gold-bright);
+    background:var(--navy-panel);
+    border:1px solid var(--line);
+    text-align:center;
+    padding:4px 2px;
+    border-radius:2px;
+    height:fit-content;
+    letter-spacing:0.02em;
+  }
+  .node{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--navy-deep);
+    border:2px solid var(--gold);
+    margin-top:6px;
+    justify-self:center;
+    z-index:1;
+  }
+  .event.hotel .node{background:var(--gold);border-color:var(--gold);}
+  .event-body{padding-top:2px;}
+  .event-title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:16.5px;
+    color:var(--cream);
+    margin:0 0 4px;
+  }
+  .event-desc{
+    font-size:13.5px;
+    color:var(--frost);
+    font-weight:300;
+    margin:0;
+  }
+  .event.hotel .event-title{color:var(--gold-bright);}
+  .event.hotel .flap{border-color:var(--gold);color:var(--gold-bright);}
+
+  .day-foot{
+    margin-top:8px;
+    padding-top:18px;
+    border-top:1px dashed var(--line);
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    color:var(--frost-dim);
+    display:flex;
+    justify-content:space-between;
+  }
+
+  .prevnext{
+    display:flex;
+    justify-content:space-between;
+    margin-top:36px;
+    padding-top:20px;
+  }
+  .navbtn{
+    background:var(--navy-panel);
+    border:1px solid var(--line);
+    color:var(--cream);
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    padding:10px 16px;
+    cursor:pointer;
+    border-radius:2px;
+    transition:border-color .2s, color .2s;
+  }
+  .navbtn:hover{border-color:var(--gold);color:var(--gold-bright);}
+  .navbtn:disabled{opacity:0.25;cursor:default;}
+
+  footer{
+    text-align:center;
+    margin-top:70px;
+    padding:30px 24px 0;
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;
+    color:var(--frost-dim);
+    letter-spacing:0.08em;
+    position:relative;
+    z-index:1;
+  }
+
+  @media(max-width:560px){
+    .event{grid-template-columns:50px 22px 1fr;gap:0 10px;}
+    .flap{font-size:10.5px;padding:3px 1px;}
+    header.hero{padding:44px 16px 30px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="snow" id="snow"></div>
+
+<header class="hero">
+  <div class="eyebrow">Christmas Rail Journey · Mitteleuropa</div>
+  <h1 class="title">Wien <em>—</em> Praha <em>—</em> Nürnberg <em>—</em> München <em>—</em> Salzburg <em>—</em> Hallstatt</h1>
+  <div class="subtitle">10 NIGHTS · ANA HANEDA ROUND TRIP · RAIL &amp; CHRISTKINDLMARKT</div>
+  <div class="date-range"><span class="dot"></span>2026.12.19 (FRI) — 2026.12.29 (TUE)</div>
+</header>
+
+<div class="route-wrap">
+  <div class="route-label">Journey Line</div>
+  <svg class="route-svg" viewBox="0 0 900 90" xmlns="http://www.w3.org/2000/svg">
+    <line x1="40" y1="45" x2="860" y2="45" stroke="#d4a24c" stroke-opacity="0.35" stroke-width="1"/>
+    <!-- stops -->
+    <g id="stops"></g>
+  </svg>
+</div>
+
+<nav class="daynav" id="daynav"></nav>
+
+<main>
+  <div id="days"></div>
+  <div class="prevnext">
+    <button class="navbtn" id="prevBtn">← 前の日</button>
+    <button class="navbtn" id="nextBtn">次の日 →</button>
+  </div>
+</main>
+
+<footer>
+  HANEDA (RJTT) ⇄ WIEN (LOWW) · ANA · Handwritten for a Central European Christmas, 2026
+</footer>
+
+<script>
+const DAYS = [
+  {
+    date:"12/19", dow:"金", city:"羽田 → 機内", n:"DAY 1",
+    events:[
+      {time:"22:45", title:"羽田出発（ANA）", desc:"ウィーンへ向けて出発"},
+      {time:"—", title:"機内泊", desc:"機内でひと晩", hotel:true}
+    ]
+  },
+  {
+    date:"12/20", dow:"日", city:"ウィーン", n:"DAY 2 · Wien ①",
+    events:[
+      {time:"06:20", title:"ウィーン到着", desc:""},
+      {time:"08:30", title:"ホテルへ荷物預け", desc:""},
+      {time:"09:30", title:"シュテファン大聖堂・グラーベン通り散策", desc:"〜12:00"},
+      {time:"12:00", title:"ランチ", desc:""},
+      {time:"13:30", title:"シェーンブルン宮殿・クリスマスマーケット", desc:"〜16:30"},
+      {time:"17:00", title:"市庁舎前クリスマスマーケット", desc:"〜20:00"},
+      {time:"—", title:"ウィーン泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/21", dow:"月", city:"プラハ", n:"DAY 3 · Praha ①",
+    events:[
+      {time:"07:00", title:"朝食", desc:""},
+      {time:"08:10", title:"Railjetでプラハへ", desc:"所要 約4時間"},
+      {time:"12:30", title:"到着・ランチ", desc:""},
+      {time:"14:00", title:"旧市街・天文時計・クリスマスマーケット", desc:"〜18:00"},
+      {time:"夜", title:"カレル橋ライトアップ", desc:""},
+      {time:"—", title:"プラハ泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/22", dow:"火", city:"プラハ", n:"DAY 4 · Praha ②",
+    events:[
+      {time:"08:00", title:"朝食", desc:""},
+      {time:"09:00", title:"プラハ城", desc:"聖ヴィート大聖堂・黄金の小路"},
+      {time:"12:00頃", title:"ランチ", desc:""},
+      {time:"午後", title:"マラー・ストラナ地区・ペトシーン周辺散策", desc:"時間があれば"},
+      {time:"夜", title:"クリスマスマーケット", desc:""},
+      {time:"—", title:"プラハ泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/23", dow:"水", city:"ニュルンベルク", n:"DAY 5 · Nürnberg",
+    events:[
+      {time:"08:00", title:"プラハ発", desc:""},
+      {time:"12:30", title:"ニュルンベルク着・ランチ", desc:""},
+      {time:"午後", title:"旧市街・皇帝城", desc:""},
+      {time:"夕方〜夜", title:"クリストキントレスマルクト", desc:""},
+      {time:"—", title:"ニュルンベルク泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/24", dow:"木", city:"ミュンヘン", n:"DAY 6 · München ①",
+    events:[
+      {time:"午前", title:"ニュルンベルク散策", desc:""},
+      {time:"11:30", title:"ミュンヘンへ", desc:""},
+      {time:"13:00頃", title:"到着・ランチ", desc:""},
+      {time:"午後", title:"マリエン広場・新市庁舎・ヴィクトアリエン市場", desc:""},
+      {time:"夜", title:"レジデンツ周辺散策", desc:""},
+      {time:"—", title:"ミュンヘン泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/25", dow:"金", city:"ミュンヘン", n:"DAY 7 · München ②",
+    events:[
+      {time:"朝", title:"BMWワールド または ニンフェンブルク宮殿", desc:""},
+      {time:"昼", title:"ビアホール", desc:""},
+      {time:"15:00", title:"くるみ割り人形 🩰", desc:"15時公演想定"},
+      {time:"18:00", title:"夕食", desc:""},
+      {time:"—", title:"ミュンヘン泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/26", dow:"土", city:"ザルツブルク", n:"DAY 8 · Salzburg",
+    events:[
+      {time:"08:00頃", title:"列車でザルツブルクへ", desc:"所要 約1時間30〜40分"},
+      {time:"10:00頃", title:"到着・旧市街・モーツァルト広場", desc:""},
+      {time:"12:00頃", title:"ランチ", desc:""},
+      {time:"午後", title:"ホーエンザルツブルク城塞・ミラベル庭園", desc:""},
+      {time:"—", title:"ザルツブルク泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/27", dow:"日", city:"ハルシュタット", n:"DAY 9 · Hallstatt",
+    events:[
+      {time:"09:00頃", title:"列車移動", desc:"所要 約2時間半〜3時間"},
+      {time:"12:00頃", title:"ハルシュタット着・ランチ", desc:""},
+      {time:"午後", title:"湖畔散策・展望スポット・写真撮影", desc:""},
+      {time:"夕暮れ", title:"湖畔", desc:""},
+      {time:"夜", title:"静かなハルシュタット散策", desc:""},
+      {time:"—", title:"ハルシュタット泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/28", dow:"月", city:"ウィーン", n:"DAY 10 · Wien ②",
+    events:[
+      {time:"朝", title:"ハルシュタット散策", desc:""},
+      {time:"09:30〜10:00頃", title:"出発", desc:""},
+      {time:"13:00〜14:00頃", title:"ウィーン着", desc:""},
+      {time:"午後", title:"自由時間", desc:"買い物・カフェ・行けなかった場所"},
+      {time:"夜", title:"最後のディナー", desc:""},
+      {time:"—", title:"ウィーン泊", desc:"", hotel:true}
+    ]
+  },
+  {
+    date:"12/29", dow:"火", city:"帰国", n:"DAY 11",
+    events:[
+      {time:"早朝", title:"空港へ", desc:""},
+      {time:"午前便", title:"ウィーン発", desc:"羽田へ"}
+    ]
+  }
+];
+
+const stopsForRoute = [
+  {city:"WIEN", d:"D2"},{city:"PRAHA", d:"D3–4"},{city:"NÜRNBERG", d:"D5"},
+  {city:"MÜNCHEN", d:"D6–7"},{city:"SALZBURG", d:"D8"},{city:"HALLSTATT", d:"D9"},{city:"WIEN", d:"D10"}
+];
+
+// build route svg
+const stopsG = document.getElementById('stops');
+const n = stopsForRoute.length;
+const xStart=40, xEnd=860;
+stopsForRoute.forEach((s,i)=>{
+  const x = xStart + (xEnd-xStart)*(i/(n-1));
+  const isRepeat = s.city==="WIEN" && i>0;
+  const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+  c.setAttribute("cx",x); c.setAttribute("cy",45); c.setAttribute("r",5);
+  c.setAttribute("fill", isRepeat ? "#0b1220" : "#d4a24c");
+  c.setAttribute("stroke","#d4a24c"); c.setAttribute("stroke-width","1.5");
+  stopsG.appendChild(c);
+  const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+  t.setAttribute("x",x); t.setAttribute("y", i%2===0 ? 30 : 70);
+  t.setAttribute("text-anchor","middle");
+  t.setAttribute("class","route-city"+(isRepeat?" repeat":""));
+  t.textContent = s.city;
+  stopsG.appendChild(t);
+  const dtxt = document.createElementNS("http://www.w3.org/2000/svg","text");
+  dtxt.setAttribute("x",x); dtxt.setAttribute("y", i%2===0 ? 20 : 82);
+  dtxt.setAttribute("text-anchor","middle");
+  dtxt.setAttribute("class","route-days");
+  dtxt.textContent = s.d;
+  stopsG.appendChild(dtxt);
+});
+
+// build nav tabs
+const navEl = document.getElementById('daynav');
+const daysEl = document.getElementById('days');
+DAYS.forEach((d,i)=>{
+  const btn = document.createElement('button');
+  btn.className = 'tabbtn';
+  btn.dataset.idx = i;
+  btn.innerHTML = `${d.date}(${d.dow})<span class="tabcity">${d.city}</span>`;
+  btn.onclick = ()=>showDay(i);
+  navEl.appendChild(btn);
+
+  const sec = document.createElement('div');
+  sec.className = 'day';
+  sec.dataset.idx = i;
+  let eventsHtml = '';
+  d.events.forEach(ev=>{
+    eventsHtml += `
+      <div class="event${ev.hotel?' hotel':''}">
+        <div class="flap">${ev.time}</div>
+        <div class="node"></div>
+        <div class="event-body">
+          <p class="event-title">${ev.title}</p>
+          ${ev.desc ? `<p class="event-desc">${ev.desc}</p>` : ''}
+        </div>
+      </div>`;
+  });
+  sec.innerHTML = `
+    <div class="day-head">
+      <div class="day-date">${d.date} (${d.dow}) &nbsp;·&nbsp; ${d.n}</div>
+      <h2 class="day-city">${d.city}</h2>
+    </div>
+    <div class="timeline">${eventsHtml}</div>
+  `;
+  daysEl.appendChild(sec);
+});
+
+let current = 0;
+function showDay(i){
+  current = i;
+  document.querySelectorAll('.day').forEach(el=>el.classList.toggle('active', +el.dataset.idx===i));
+  document.querySelectorAll('.tabbtn').forEach(el=>el.classList.toggle('active', +el.dataset.idx===i));
+  document.getElementById('prevBtn').disabled = i===0;
+  document.getElementById('nextBtn').disabled = i===DAYS.length-1;
+  const activeTab = document.querySelector('.tabbtn.active');
+  if(activeTab) activeTab.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.getElementById('prevBtn').onclick = ()=>{ if(current>0) showDay(current-1); };
+document.getElementById('nextBtn').onclick = ()=>{ if(current<DAYS.length-1) showDay(current+1); };
+showDay(0);
+
+// snow
+const snowEl = document.getElementById('snow');
+for(let i=0;i<40;i++){
+  const f = document.createElement('div');
+  f.className = 'flake';
+  const size = Math.random()*3+1.5;
+  f.style.width = size+'px';
+  f.style.height = size+'px';
+  f.style.left = Math.random()*100+'%';
+  f.style.animationDuration = (Math.random()*8+10)+'s';
+  f.style.animationDelay = (Math.random()*10)+'s';
+  f.style.opacity = Math.random()*0.5+0.2;
+  snowEl.appendChild(f);
+}
+</script>
+</body>
+</html>
